@@ -40,7 +40,7 @@ class Object3dVisualizerNode(Node):
             marker.color.r, marker.color.g, marker.color.b = LABEL_TO_COLOR[object.label]
             marker.color.a = 1.0
             marker.scale.x = 0.10
-            marker.lifetime = Duration(seconds=5.0).to_msg()    # should be removed when object.id exists
+            marker.lifetime = Duration(seconds=0.1).to_msg()    # should be removed when object.id exists
             marker.ns = "object_visualization"
 
             for i in range(4):
@@ -64,9 +64,7 @@ class Object3dVisualizerNode(Node):
 
             marker_array.markers.append(marker)
 
-        self.visualization_publisher.publish(marker_array)
-        self.get_logger().info("Published visualization")
-        
+        self.visualization_publisher.publish(marker_array)        
 
 
 def main(args=None):

@@ -1,6 +1,7 @@
 /**:
     ros__parameters:
-      config_path: "/home/rae384/workdir/ros2_mmdet3d_inference/data/configs/pointpillars_hv_secfpn_8xb6-160e_kitti-3d-3class.py"
-      checkpoint_path: "/home/rae384/workdir/ros2_mmdet3d_inference/data/checkpoints/hv_pointpillars_secfpn_6x8_160e_kitti-3d-3class_20220301_150306-37dc2420.pth"
+      config_path: "/ros2-mmdetection3d-inference/data/configs/pointpillars_hv_secfpn_8xb6-160e_kitti-3d-3class.py"
+      checkpoint_path: "/ros2-mmdetection3d-inference/data/checkpoints/hv_pointpillars_secfpn_6x8_160e_kitti-3d-3class_20220301_150306-37dc2420.pth"
       device: "cuda:0"
       score_threshold: 0.7
+      translate_height: -1.5

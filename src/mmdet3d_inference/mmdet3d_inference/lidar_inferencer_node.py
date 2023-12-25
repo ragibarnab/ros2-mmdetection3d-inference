@@ -25,12 +25,14 @@ class MMDet3DLidarInferencerNode(Node):
         self.declare_parameter("checkpoint_path", "")
         self.declare_parameter("device", "cuda:0")
         self.declare_parameter("score_threshold", 0.5)
+        self.declare_parameter("translate_height", 0.0)
 
         # get parameters
         config_path = self.get_parameter("config_path").get_parameter_value().string_value
         checkpoint_path = self.get_parameter("checkpoint_path").get_parameter_value().string_value
         device = self.get_parameter("device").get_parameter_value().string_value
         self.score_threshold = self.get_parameter("score_threshold").get_parameter_value().double_value
+        self.translate_height = self.get_parameter("translate_height").get_parameter_value().double_value
 
         self.model = init_model(config=config_path, checkpoint=checkpoint_path, device=device)
 
@@ -42,18 +44,14 @@ class MMDet3DLidarInferencerNode(Node):
         )
 
         self.objects_publisher = self.create_publisher(Object3dArray, 'object_detections_3d', 10)
-        self.lidar_publisher = self.create_publisher(PointCloud2, 'lidar', 10)
-
-        self.create_timer(
-            timer_period_sec=1.0,
-            callback=self.timer_cb
-        )
 
 
     def lidar_callback(self, lidar_msg: PointCloud2):
         pcd = rnp.numpify(lidar_msg)
+        #pcd = pcd[::2]   # this reduces the rings to 64, it appears to work when running against the parade bag
         pcd = np.array([ pcd['x'].flatten(), pcd['y'].flatten(), pcd['z'].flatten(), pcd['reflectivity'].flatten()]).T
         pcd[:, 3] /= 255.0
+        pcd[:, 2] += self.translate_height
 
         results, _ = inference_detector(model=self.model, pcds=pcd)
         bbox_corners = results.pred_instances_3d.bboxes_3d.corners
@@ -92,7 +90,7 @@ class MMDet3DLidarInferencerNode(Node):
         point_msg = Point()
         point_msg.x = float(point[0])
         point_msg.y = float(point[1])
-        point_msg.z = float(point[2])
+        point_msg.z = float(point[2]) - self.translate_height
         return point_msg
 
         
